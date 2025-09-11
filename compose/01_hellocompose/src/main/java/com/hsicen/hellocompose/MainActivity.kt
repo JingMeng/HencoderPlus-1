@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.hsicen.hellocompose.ui.ChatPage
 import com.hsicen.hellocompose.ui.Home
 import com.hsicen.hellocompose.ui.theme.WeComposeTheme
@@ -17,7 +16,6 @@ import com.hsicen.hellocompose.ui.theme.WeComposeTheme
  * 功能：
  * 描述：微信主页
  */
-@ExperimentalPagerApi
 class MainActivity : ComponentActivity() {
     private val mViewModel by viewModels<WeViewModel>()
 

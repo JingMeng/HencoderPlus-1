@@ -19,12 +19,12 @@ buildscript {
 
 allprojects {
   repositories {
+    google()
     maven(Mavens.aliyunPublic)
     maven(Mavens.aliyunGoogle)
     maven(Mavens.aliyunGooglePlugin)
     maven(Mavens.jitpackIo)
 
-    google()
     mavenCentral()
   }
 }
