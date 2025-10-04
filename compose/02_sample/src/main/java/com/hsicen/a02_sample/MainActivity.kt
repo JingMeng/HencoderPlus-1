@@ -56,7 +56,7 @@ import coil.compose.rememberAsyncImagePainter
  *  9. Modifier.verticalScroll() -> ScrollView
  *
  * Modifier(属性控制)
- *  1.对顺序敏感    就体现在padding实现margin的效果，
+ *  1.对顺序敏感    就体现在padding实现margin的效果(padding  margin 区别  主要在背景色)
  *  2.多次调用会依次应用，而不是互相覆盖
  *  3.通用属性使用 Modifier，专属属性使用函数
  *  4.padding() 增加边距
@@ -86,110 +86,122 @@ import coil.compose.rememberAsyncImagePainter
  *  3. material-icons-extend also need include alone.
  */
 class MainActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    setContent {
-      // common components.
-      Column(Modifier.padding(16.dp)) {
-        Image(
-          rememberAsyncImagePainter("https://cdn.pixabay.com/photo/2015/05/28/18/50/the-three-gorges-788314__340.jpg"),
-          "Coil",
-          modifier = Modifier
-            .wrapContentSize()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable {
-              Toast
-                .makeText(this@MainActivity, "Top image.", Toast.LENGTH_SHORT)
-                .show()
-            }
-        )
-        Text(text = "Hello World", fontSize = 40.sp, color = Color.Green)
-        Text(text = "Hello World", fontSize = 20.sp, color = Color.Red)
+        setContent {
+            // common components.
+            Column(Modifier.padding(16.dp)) {
+                Image(
+                    rememberAsyncImagePainter("https://cdn.pixabay.com/photo/2015/05/28/18/50/the-three-gorges-788314__340.jpg"),
+                    "Coil",
+                    modifier = Modifier
+                      .wrapContentSize()
+                      .clip(RoundedCornerShape(12.dp))
+                      .clickable {
+                        Toast
+                          .makeText(this@MainActivity, "Top image.", Toast.LENGTH_SHORT)
+                          .show()
+                      }
+                )
+                Text(text = "Hello World", fontSize = 40.sp, color = Color.Green)
+                Text(text = "Hello World", fontSize = 20.sp, color = Color.Red)
 
-        val names = listOf(
-          "1-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
-          "2-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
-          "3-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
-          "4-Java", "Kotlin", "Flutter", "Swift", "ReactNative"
-        )
+                val names = listOf(
+                    "1-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
+                    "2-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
+                    "3-Java", "Kotlin", "Flutter", "Swift", "ReactNative",
+                    "4-Java", "Kotlin", "Flutter", "Swift", "ReactNative"
+                )
 
-        // 列表数据
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-          // 列表集合
-          items(names) { item ->
-            Text(text = item)
-            Spacer(modifier = Modifier.size(1.dp))
-          }
+                // 列表数据
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    // 列表集合
+                    items(names) { item ->
+                        Text(text = item)
+                        Spacer(modifier = Modifier.size(1.dp))
+                    }
 
-          // 单个 item
-          // shape size 处理 (clip)
-          item {
-            Spacer(modifier = Modifier.size(8.dp))
-            Image(
-              rememberAsyncImagePainter("https://cdn.pixabay.com/photo/2015/05/28/18/50/the-three-gorges-788314__340.jpg"),
-              "Coil",
-              contentScale = ContentScale.FillBounds,
-              modifier = Modifier
-                .size(width = 320.dp, height = 180.dp)
-                .clip(RoundedCornerShape(8.dp))
-            )
+                    // 单个 item
+                    // shape size 处理 (clip)
+                    item {
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Image(
+                            rememberAsyncImagePainter("https://cdn.pixabay.com/photo/2015/05/28/18/50/the-three-gorges-788314__340.jpg"),
+                            "Coil",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                              .size(width = 320.dp, height = 180.dp)
+                              .clip(RoundedCornerShape(8.dp))
+                        )
 
-            Spacer(modifier = Modifier.size(8.dp))
-          }
+                        Spacer(modifier = Modifier.size(8.dp))
+                    }
 
-          // padding 处理 (都是内边距padding, 没有外边距margin)，通过添加 padding 的顺序来实现 margin 效果
-          items(names) { item ->
-            Text(
-              text = item,
-              Modifier
-                .background(Color.Green)
-                .padding(8.dp)
-                .background(Color.Gray, RoundedCornerShape(6.dp))
-                .padding(8.dp)
-                .background(Color.Yellow)
-                .clickable {
-                  Toast
-                    .makeText(this@MainActivity, item, Toast.LENGTH_SHORT)
-                    .show()
+                    // padding 处理 (都是内边距padding, 没有外边距margin)，通过添加 padding 的顺序来实现 margin 效果
+                    items(names) { item ->
+                        Text(
+                            text = item,
+                            Modifier
+                              .background(Color.Green)
+                              .padding(8.dp)
+                              .background(Color.Gray, RoundedCornerShape(6.dp))
+                              .padding(8.dp)
+                              .background(Color.Yellow)
+                              .clickable {
+                                Toast
+                                  .makeText(this@MainActivity, item, Toast.LENGTH_SHORT)
+                                  .show()
+                              }
+                        )
+                        Spacer(modifier = Modifier.size(1.dp))
+                    }
+
+                    // button
+                    item {
+                        Button(onClick = {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "button container.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }) {
+                            Column {
+                                Text(text = "智力 +10", modifier = Modifier.clickable {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "button content.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                })
+                                Text(text = "(GM 特权)", modifier = Modifier.clickable {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "gm right.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                })
+                            }
+                        }
+                        Spacer(modifier = Modifier.size(8.dp))
+
+                        OutlinedButton(onClick = {}) {
+                            Text(text = "力量 +10")
+                        }
+
+                        TextButton(onClick = {}) {
+                            Text(text = "攻击 +10")
+                        }
+
+                        FloatingActionButton(
+                            onClick = {},
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(text = "智力 +100", modifier = Modifier.padding(16.dp))
+                        }
+                    }
                 }
-            )
-            Spacer(modifier = Modifier.size(1.dp))
-          }
-
-          // button
-          item {
-            Button(onClick = {
-              Toast.makeText(this@MainActivity, "button container.", Toast.LENGTH_SHORT).show()
-            }) {
-              Column {
-                Text(text = "智力 +10", modifier = Modifier.clickable {
-                  Toast.makeText(this@MainActivity, "button content.", Toast.LENGTH_SHORT).show()
-                })
-                Text(text = "(GM 特权)", modifier = Modifier.clickable {
-                  Toast.makeText(this@MainActivity, "gm right.", Toast.LENGTH_SHORT).show()
-                })
-              }
             }
-            Spacer(modifier = Modifier.size(8.dp))
-
-            OutlinedButton(onClick = {}) {
-              Text(text = "力量 +10")
-            }
-
-            TextButton(onClick = {}) {
-              Text(text = "攻击 +10")
-            }
-
-            FloatingActionButton(
-              onClick = {},
-              modifier = Modifier.padding(8.dp)
-            ) {
-              Text(text = "智力 +100", modifier = Modifier.padding(16.dp))
-            }
-          }
         }
-      }
     }
-  }
 }
