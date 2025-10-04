@@ -56,7 +56,7 @@ import coil.compose.rememberAsyncImagePainter
  *  9. Modifier.verticalScroll() -> ScrollView
  *
  * Modifier(属性控制)
- *  1.对顺序敏感
+ *  1.对顺序敏感    就体现在padding实现margin的效果，
  *  2.多次调用会依次应用，而不是互相覆盖
  *  3.通用属性使用 Modifier，专属属性使用函数
  *  4.padding() 增加边距
