@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -34,54 +35,60 @@ import kotlinx.coroutines.launch
  * 带参数的 remember, 可以根据 key 是否改变来决定是否使用上次计算的缓存
  */
 fun ComponentActivity.stateScreen120() {
-  setContent { // Recompose Scope
-    var name by mutableStateOf("hsicen")
+    setContent {
+        // Recompose Scope
+        //这个地方那个提示需要使用 remember
+//        var name by mutableStateOf("hsicen")
+        var name by remember {  mutableStateOf("hsicen") }
 
-    Text(
-      name,
-      textAlign = TextAlign.Center,
-      fontSize = 24.sp,
-      modifier = Modifier.padding(16.dp)
-    )
+        Text(
+            name,
+            textAlign = TextAlign.Center,
+            fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+        //这个地方存在一个警告
+        //Calls to launch should happen inside a LaunchedEffect and not composition
 
-    lifecycleScope.launch {
-      delay(3000)
-      name = "黄思程~~~"
+
+        lifecycleScope.launch {
+            delay(3000)
+            name = "黄思程~~~"
+        }
     }
-  }
 }
 
 // 缩小 重组作用域(再包一层)
 fun ComponentActivity.stateScreen121() {
-  setContent {
-    var name by mutableStateOf("hsicen")
-    Button(onClick = {
-      Log.d(MainActivity.TAG, "stateScreen121: 点击.")
-    }, modifier = Modifier.padding(16.dp)) { // Recompose Scope
-      Text(name, textAlign = TextAlign.Center, fontSize = 24.sp)
-    }
+    setContent {
+        var name by mutableStateOf("hsicen")
+        Button(onClick = {
+            Log.d(MainActivity.TAG, "stateScreen121: 点击.")
+        }, modifier = Modifier.padding(16.dp)) { // Recompose Scope
+            Text(name, textAlign = TextAlign.Center, fontSize = 24.sp)
+        }
 
-    lifecycleScope.launch {
-      delay(3000)
-      name = "黄思程~~~"
+        lifecycleScope.launch {
+            delay(3000)
+            name = "黄思程~~~"
+        }
     }
-  }
 }
 
 // 使用 remember 避免 Recompose 时代码重复执行, 直接使用缓存数据
 fun ComponentActivity.stateScreen122() {
-  setContent { // Recompose Scope
-    var name by remember { mutableStateOf("hsicen") }
-    Text(
-      name, textAlign = TextAlign.Center, fontSize = 24.sp,
-      modifier = Modifier.padding(16.dp)
-    )
+    setContent { // Recompose Scope
+        var name by remember { mutableStateOf("hsicen") }
+        Text(
+            name, textAlign = TextAlign.Center, fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
 
-    LaunchedEffect(Unit, block = {
-      delay(3000)
-      name = "黄思程~~~"
-    })
-  }
+        LaunchedEffect(Unit, block = {
+            delay(3000)
+            name = "黄思程~~~"
+        })
+    }
 }
 
 /*****
@@ -90,6 +97,6 @@ fun ComponentActivity.stateScreen122() {
  * */
 @Composable
 private fun ShowContent123(str: String) {
-  val len = remember(str) { str.length }
-  Text(text = "content is: $len")
+    val len = remember(str) { str.length }
+    Text(text = "content is: $len")
 }
