@@ -41,25 +41,25 @@ import androidx.compose.runtime.*
  * mutableStateOf 是对 get/set 操作监听
  * mutableStateListOf/mutableStateMapOf 会对 item 的操作进行监听
  */
-@Composable  // 有状态组件
+@Composable  // 有状态组件---------------并不是有状态的组件;content 是常量，需要和 withState132 区分
 private fun WithState130() {
-  val content = "Hello hsicen"
-  Text(text = content)
+    val content = "Hello hsicen"
+    Text(text = content)
 }
 
 @Composable  // 无状态组件
 private fun WithoutState131(content: String = "Hello hsicen") {
-  Text(text = content)
+    Text(text = content)
 }
 
 // 变量需要用 mutableStateOf 包裹，如果在 compose scope 中，还需要再包上一层 remember。
 fun ComponentActivity.withState132() {
-  setContent {
-    var name by remember { mutableStateOf("hsicen") }
-    TextField(value = name, onValueChange = {
-      // check input content.
-      name = it
-      Log.i(MainActivity.TAG, "withState132: $name")
-    })
-  }
+    setContent {
+        var name by remember { mutableStateOf("hsicen") }
+        TextField(value = name, onValueChange = {
+            // check input content.
+            name = it
+            Log.i(MainActivity.TAG, "withState132: $name")
+        })
+    }
 }

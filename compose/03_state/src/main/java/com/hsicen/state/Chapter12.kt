@@ -38,8 +38,8 @@ fun ComponentActivity.stateScreen120() {
     setContent {
         // Recompose Scope
         //这个地方那个提示需要使用 remember
-//        var name by mutableStateOf("hsicen")
-        var name by remember {  mutableStateOf("hsicen") }
+        var name by mutableStateOf("hsicen")
+//        var name by remember {  mutableStateOf("hsicen") }
 
         Text(
             name,
