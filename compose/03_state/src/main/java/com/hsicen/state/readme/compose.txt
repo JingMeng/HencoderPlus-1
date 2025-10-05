@@ -1,0 +1,355 @@
+1.
+
+5分钟，声明式的含义
+  只需要声明出来，不存在手动更新界面，关联数据，数据更新，界面自动更新
+
+  和databinding有什么区别？
+
+
+  2. 自动更新的字符串的写法
+
+
+  3. setText就是命令式设置 数据，但是compose不存在
+
+  4. 
+
+     继承的activity改变了
+
+  5.   fragment 里面怎么写，view里面怎么写？ 
+      这个问题从来没有考虑过
+
+
+  6.    矢量图 用规则来描述的  占用存储空间更好，不怕尺寸放大
+        位图 描述的像素点 存在压缩算法 放大会产生锯齿现象
+         
+        软件还原是涂抹，修正，减少锯齿的现象
+
+
+  7.     底层实现不是Android组件，平台无关，独立平台
+
+         canvas(原生的)的具体操作
+
+         flutter 是ndk 做的
+
+         compose要考虑原生的交互，没有做到ndk
+ 
+  8.  
+    padding  margin 区别  主要在背景色
+    
+    存在先后顺序，同时使用都没有问题
+    区分bulider模式
+    不存在覆盖，是依次调用，不用重复的包裹
+
+
+ 9.  尺寸都有默认的大小
+     什么时候是 Modifier -----通用
+     什么是函数参数 --------- 专项
+
+
+10. 控件没有返回值 ；声明方式的一个特点
+    不需要手动更新一些参数，就不需要返回值
+
+    Button 的特例就是一种简便的写法，最终还是使用 Modifier
+
+
+11.  ui-tooling 提供了预览的功能
+    
+    有特例
+     ui 
+     ui-tooling
+     material
+     material-icons-extended
+     material-icons-core
+
+   2小时左右的依赖的关系，需要梳理，观察
+
+https://android.googlesource.com/platform//frameworks/support/%2B/1de65587b7e999a38df120bd8827c3594974864d/compose/material/material-icons-extended/build.gradle?utm_source=chatgpt.com
+
+
+------------------------------------------------------------------------------------
+
+
+
+
+12.  所有控件 加那个注释----识别符
+     调用处--被修改，编译
+
+     composeNode
+
+      compose 需要被 compose 调用
+
+------------------------------------------------------------------------------------
+
+
+
+13. 底层原理
+     那个attach 默认是false
+     找到启动的地点
+
+     1:22
+
+
+
+------------------------------------------------------------------------------------
+
+ 添加 @Composable 可以得到独特的上下文环境参数
+ Context
+
+  和suspend很类似
+
+Composable 就是指 加了 @Composable注解的函数
+
+自定义 Composable 就是 创建 @Composable修饰的函数
+
+自定义Composable 等价于 自定义View+xml
+简单的自定义view:组合view  解决逻辑需求
+
+
+------------------------------------------------------------------------------------
+
+1.
+这种声明式的UI，最方便的就是做到了自动更新，mvi单数据流是自动更新吗？
+
+MutableState  就是做到自动更新，我们默认的kt是做到的，为了能做到就需要借助封装，这个封装就是 MutableState
+
+val 和var 的写法  以及value
+
+2.
+  by  是方便的写法 这个是kotlin的官方实现
+
+   对应于  compose/03_state/src/main/java/com/hsicen/state/MainActivity.kt
+
+     private val hsicen: String by NameDelegate() 的讲解
+
+
+  private val hsicen: String by NameDelegate()
+
+   hsicen 的取值和赋值是 NameDelegate 来代理的
+
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
+
+2. 使用 by 的时候 val 要变回 var
+
+
+30min左右的一个代码
+
+1. 这个事最基本的 mutableStateOf 引入的demo，这样是一个最近本的声明式的UI
+这种声明式的UI，最方便的就是做到了自动更新 ，这地方引入了 mutableStateOf 就讲解了recompose 了
+1.1 我们讲解，理解复习一下kotlin的 by操作
+1.2 其次就是全局变量改为局部变量的变化;全局变量的时候不需要 remember， remember 是 @Composable 的
+1.3 为了解决这个问题我们引入了 remember  remember 缓存的作用域是挂在和取消 不夸activity的
+
+fun ComponentActivity.stateScreen() {
+  var name by mutableStateOf("hsicen")
+
+  setContent { // Recompose Scope
+      Text(
+          name, textAlign = TextAlign.Center, fontSize = 24.sp,
+          modifier = Modifier.padding(16.dp)
+      )
+  }
+
+  lifecycleScope.launch {
+      delay(3000)
+      name = "黄思程~~~"
+  }
+}
+
+//这个一直不展示是 黄思程~~~ 是因为重组导致的
+fun ComponentActivity.stateScreen1() {
+    setContent { // Recompose Scope
+        var name by mutableStateOf("hsicen")
+        Text(
+            name, textAlign = TextAlign.Center, fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        lifecycleScope.launch {
+            delay(3000)
+            name = "黄思程~~~"
+        }
+    }
+}
+
+fun ComponentActivity.stateScreen2() {
+    setContent { // Recompose Scope
+        var name by remember { mutableStateOf("hsicen") }
+        Text(
+            name, textAlign = TextAlign.Center, fontSize = 24.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        lifecycleScope.launch {
+            delay(3000)
+            name = "黄思程~~~"
+        }
+    }
+}
+
+
+
+
+// 缩小 重组作用域(再包一层)       -----------------  还有这个方案，缩小重组的作用域
+fun ComponentActivity.stateScreen3() {
+    setContent {
+        var name by mutableStateOf("hsicen")
+        Button(onClick = {
+            Log.d(MainActivity.TAG, "stateScreen121: 点击.")
+        }, modifier = Modifier.padding(16.dp)) { // Recompose Scope
+            Text(name, textAlign = TextAlign.Center, fontSize = 24.sp)
+        }
+
+        lifecycleScope.launch {
+            delay(3000)
+            name = "黄思程~~~"
+        }
+    }
+}
+
+思考一下抽取函数的操作是不是也可以达到解决这个问题，也就是第三种方案
+
+
+
+------------------------------------------------------------------------------
+快 稳 明白 就是优势
+------------------------------------------------------------------------------
+
+remember 解决重复请求，尤其是网络请求的时候，用不好就会导致服务器压力变大
+
+remember(str) key的 必要性的解释 ;也就是性能和业务的稳定的计算
+  这个key 是 多参数的
+/*****
+ * 带参数的 remember. 只要参数不变, remember 包裹的代码就不会重复执行.
+ * 重复的 str 不会计算长度
+ * */
+@Composable
+private fun ShowContent123(str: String) {
+    val len = remember(str) { str.length }
+    Text(text = "content is: $len")
+}
+
+----------------compose的无状态
+
+我们的Android 原生的textView
+可以设置，可以获取
+
+但是compose 只能设置不能获取，也就是他不维护这个数据状态
+这是 compose的一种特点
+
+@Composable  // 有状态组件---------------并不是有状态的组件;content 是常量，需要和 withState132 区分
+private fun WithState130() {
+    val content = "Hello hsicen"
+    Text(text = content)
+}
+
+
+关于状态这个地方就设置一个状态提升的概念
+
+
+没有内部状态，之前Android原生的内部状态改到外部
+传统的Android view 是通过组件内部的共享函数获取到状态的
+
+-----------------------------------------------------------
+state hoisting 状态提升是一种用法
+
+状态能不往外提取就不往外提取，降低代码出错率，重组范围减小
+当然状态提升带来的好处就是组件复用
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
