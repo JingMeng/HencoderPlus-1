@@ -1,0 +1,130 @@
+
+
+-----------------------------------------------------------------------------------------------------
+    // The companion object implements `Modifier` so that it may be used as the start of a
+    // modifier extension factory expression.
+    companion object : Modifier {
+        override fun <R> foldIn(initial: R, operation: (R, Element) -> R): R = initial
+        override fun <R> foldOut(initial: R, operation: (Element, R) -> R): R = initial
+        override fun any(predicate: (Element) -> Boolean): Boolean = false
+        override fun all(predicate: (Element) -> Boolean): Boolean = true
+        override infix fun then(other: Modifier): Modifier = other
+        override fun toString() = "Modifier"
+    }
+
+    单利对象，用来创建静态方法和静态变量的
+
+
+   简单的写 Modifier 不会报错
+
+
+
+
+再次强调了一下一个 @Composable只能调用一个函数
+不调用就是普通函数，添加 @Composable 没有意义
+调用多个就会导致不知道怎么排列
+为此调用一个，剩下的就是嵌套，类似㡰xml的跟布局
+ 下面这个添加了默认值，相当于两个方法了
+  多个size冲突，是有先后顺序的，先按照之前的处理！！！！ 等待测试
+@Composable
+private fun ModifierMean01(modifier: Modifier = Modifier) {
+  Box(modifier.background(Color.Green)) {
+    Text("Content")
+  }
+}
+
+有一个建议，就是第一个有默认值的参数建议是:Modifier
+modifier: Modifier = Modifier
+
+
+
+@Composable
+private fun ModifierMean01(name:String ="你好",modifier: Modifier = Modifier) {
+  Box(modifier.background(Color.Green)) {
+    Text("Content")
+  }
+}
+不可以直接给第二个赋值，不给第一个赋值
+-----------------------------------------------------------------------------------------------------
+
+
+ with 可以切换上下文
+
+
+先执行右边的，在执行左边的，这个说的是测量吧
+
+内部不足够的时候会出现挤压问题
+就看padding 那个就好了
+  这个地方虽然先内部，但是内部开始测量之前就决定了能达到的最大了
+
+    Box(
+      modifier = modifier
+        .size(100.dp)
+        .background(Color.Green)
+        .size(200.dp)
+        .background(Color.Blue)
+    )
+
+ 最终都是第一个起作用，因为后执行的起作用，父亲view决定了最后的一个，字view的并没有
+   最终父子作用到同一个控件上去了
+
+-----------------------------------------------------------------------------------------------------
+
+  Box(
+    modifier = Modifier
+      .requiredSize(80.dp)
+      .background(Color.Yellow) // 基于右边的 modifier 的范围进行背景绘制
+      .requiredSize(40.dp)
+  )
+
+加上padding有很多的问题
+requiredSize 不同父亲的话
+-----------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
