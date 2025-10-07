@@ -1,0 +1,290 @@
+
+
+
+
+状态指的是state 我们能获取到的state最简单的就是mutableStateOf了
+
+
+
+最简单的一个状态监听案例:
+  这个地方那个无法提交http数据的问题，就去考虑状态提升了
+
+fun ComponentActivity.stateScreen140() {
+  var num by mutableIntStateOf(1)
+
+  setContent {
+    Text(text = "The content of num $num", modifier = Modifier.clickable {
+      num++
+    })
+  }
+}
+
+
+
+引出 下面的问题：
+
+ val nums by mutableStateOf(mutableListOf(1, 2, 3, 4, 5))
+
+
+是一种失效的情形
+stateScreen141
+是因为add 没有触发 setValue的操作
+所以就没有起到监听的作用，这个在考虑一下原生聊天里面的那一套框架
+都是转一次，再转回去 也就是 stateScreen142 的操作
+
+stateScreen143 不仅仅是借助外部的刷新，还存在一个recompose的范围的问题
+
+ 因为存在运行和执行的问题
+
+    // 通过其它变量的改变触发 recompose 来触发 list 的刷新
+    fun ComponentActivity.stateScreen143() {
+      val nums by mutableStateOf(mutableListOf(1, 2, 3, 4, 5))
+      var flag by mutableStateOf("点击我刷新数据")
+
+      setContent {
+        Column(modifier = Modifier.padding(16.dp)) {
+          Text(text = flag, modifier = Modifier
+            .padding(16.dp)
+            .clickable {
+              flag = "$flag."
+            })
+
+          Text(text = "add list data", modifier = Modifier
+            .padding(16.dp)
+            .clickable {
+              nums.add(nums.last() + 1)
+            })
+
+          for (num in nums) {
+            Text(text = "current num is $num.")
+          }
+        }
+      }
+    }
+
+mutableStateOf 监听是针对赋值行为的监听
+说compos的监听是 赋值行为的监听有点不准确了
+
+
+-------------------------------------------------------------------------------------
+
+fun ComponentActivity.stateScreen142() {
+  var nums by mutableStateOf(mutableListOf(1, 2, 3, 4, 5))
+
+  setContent {
+    Column(modifier = Modifier.padding(16.dp)) {
+      Text(text = "add list data", modifier = Modifier
+        .padding(16.dp)
+        .clickable {
+          // nums 的 set/get 操作进行了 读/写 监听操作
+          nums = (nums + (nums.last() + 1)).toMutableList()
+        })
+
+      for (num in nums) {
+        Text(text = "current num is $num.")
+      }
+    }
+  }
+}
+这种没有性能问题吗？
+
+ 理论上并不是频繁的创建对象和丢弃对象，所以不存在性能问题
+ 但是之前的list不还是被丢弃了吗？这个是频繁丢弃对象吧
+-------------------------------------------------------------------------------------
+  val nums = mutableStateListOf(1, 2, 3, 4, 5)
+   这个不能使用by了，by是一对一的写法，我们这个是处理元素的集合的内部元素
+  var 改成了val 了
+-------------------------------------------------------------------------------------
+
+mutableStateXXXOf 是主动的刷新
+被动的的刷新，就是 我们不不使用State，然后依赖其他的State刷新导致自己刷新
+
+刷新 ----> recompose
+
+
+执行和  recompose 的区分
+
+    这个打印是一个很好的案例，在15
+@Composable
+private fun Heavy() {
+  println("Recompose scope 范围测试: heavy")
+  Text(text = "Heavy content.")
+}
+  这一块都不会被重新调用;按照我们的 epoxy 的测试案例，这个地方那个就是没有被调用的
+  但是我们的执行过程确实是执行调用了，这一块是老数据，没有变化，没有更新，所以显示没有被调用，也就是存在一个中间优化导致的
+
+
+fun ComponentActivity.composeScope152() {
+  var name by mutableStateOf("hsicen")
+  setContent {
+    println("Recompose scope 范围测试1")
+    Column {
+      println("Recompose scope 范围测试2")
+      Button(onClick = {
+        name = "黄思程~~~"
+      }) { // Recompose Scope
+        println("Recompose scope 范围测试3")
+        Heavy()
+        Text(text = name, modifier = Modifier
+          .background(Color.Cyan)
+          .padding(16.dp)
+          .clickable {
+            Toast
+              .makeText(this@composeScope152, "clicked text.", Toast.LENGTH_SHORT)
+              .show()
+          })
+      }
+    }
+  }
+}
+
+ 参数的hash 话，这个地方优化，epoxy，用来解决被动recompose的带来的沉重负担
+
+  参数传递传递了，判断的是参数，和是否使用无关
+
+
+  @Composable
+  private fun Heavy(content: String) {
+    println("Recompose scope 范围测试: heavy")
+    Text(text = "Heavy content.")
+  }
+
+    上面的没有使用，下面的使用了
+
+@Composable
+private fun Heavy(content: String) {
+  println("Recompose scope 范围测试: heavy")
+  Text(text = "Heavy $content.")
+}
+
+ 虽然我们没有 epoxy 那种两个类的验证，但是我们可以通过一个带参数，一个不带参数来验证，并且区分参数是否使用
+ 来明白原理
+
+ 但是 不使用存在一个优化的问题，再次和 epoxy不一致了
+
+ 这个被优化的过程导致我们后期需要注释使用了，后期删除了，在使用
+
+
+ 这个是一个性能优化点
+
+ 自动更新存在过度更新的问题
+
+-------------------------------------------------------------------------------------
+ 相等性比较
+ ==  和 ===
+
+ data class 会自动重写 equals
+
+  讲解这个还是讲解 epoxy 这一块的重复设置，影响是否更新的条件
+  之前是空的，现在是带参数，以及带不同参数和重复参数的问题
+
+  相同的对象是引用性(===)相等，不同的对象是结构性(equals ==)相等
+
+  证明优化是引用性相等 ==   文件 15
+
+
+// 可靠类型 ==> 判断结构性相等，来决定是否重组
+data class User(val name: String, val age: Int)
+
+// 不可靠类型 ==> (引用性相等比较，如果不相等 直接进行重组)
+data class User1(var name: String)
+
+ 就仅仅是一个val 和var 的区别，这样的个人写法就很需要注意了
+
+ 引入 @Stable  的使用
+
+
+可靠和不可靠我理解的就是你修改了是否影响界面
+就是类似单一性数据的那种流程的概念
+
+即使你使用 State 也可能存在问题，因为你修改数据的时候没有通过State
+自己手动修改了var的参数，这个时候就是孤岛
+
+ var 现在相等不能判断以后永远相等
+
+
+-----------另外一个方向的证明：
+
+hashmap hashcode  equals
+
+data class User(var name: String)
+
+ val map = mutableMapOf<User,String>()
+ val user = user("你好")
+  map.put(user,"你好")
+
+  user.name == "xiexie" 这个就是不稳定的
+
+-------------------------
+
+  引入 @Stable  的使用
+  加入  @Stable 之后，程序员保证稳定性
+
+通常写法
+  class User4(name: String, company: Company) {
+    var name by mutableStateOf(name) // 识别为可靠类型
+    var company by mutableStateOf(company) // 识别为可靠类型
+  }
+
+
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

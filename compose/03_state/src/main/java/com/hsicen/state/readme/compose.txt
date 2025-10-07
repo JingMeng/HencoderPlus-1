@@ -261,6 +261,9 @@ state hoisting 状态提升是一种用法
 当然状态提升带来的好处就是组件复用
 
 
+状态指的是state 我们能获取到的state最简单的就是mutableStateOf了
+
+
 
 
 
