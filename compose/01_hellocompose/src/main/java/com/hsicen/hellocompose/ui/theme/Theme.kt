@@ -1,5 +1,6 @@
 package com.hsicen.hellocompose.ui.theme
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
@@ -169,6 +170,8 @@ fun WeComposeTheme(
         WeComposeTheme.Theme.Dark -> DarkColorPalette
         WeComposeTheme.Theme.NewYear -> NewYearColorPalette
     }
+
+    Log.i("WeComposeTheme","=====LightColorPalette==${targetColors==LightColorPalette}==========DarkColorPalette===${targetColors==DarkColorPalette}=============NewYearColorPalette====${targetColors==NewYearColorPalette}===================")
 
     //重组这一块也会很好的记忆状态，重组的时候没有导致 targetColors 改变，但是动画执行的时间改变了
     val bottomBar = animateColorAsState(targetColors.bottomBar, TweenSpec(600))

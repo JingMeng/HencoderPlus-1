@@ -53,11 +53,8 @@ class MainActivity : ComponentActivity() {
     fun changeTheme() {
         val view = LocalView.current
         val light = WeComposeTheme.colors.light
-        // 每次主题切换都会重组并触发
-        SideEffect {
-            val controller = WindowCompat.getInsetsController(window, view)
-            controller.isAppearanceLightStatusBars = light
-        }
+        val controller = WindowCompat.getInsetsController(window, view)
+        controller.isAppearanceLightStatusBars = light
     }
 
     override fun onBackPressed() {
