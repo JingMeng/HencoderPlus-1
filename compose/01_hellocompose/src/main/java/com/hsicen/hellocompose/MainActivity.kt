@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -36,7 +37,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WeComposeTheme(mViewModel.theme) {
-                changeTheme()
+                // 从主题中获取当前是亮色还是暗色
+                val isLight = WeComposeTheme.colors.light
+                // 应用系统 UI 外观
+                SystemAppearance(isLight = isLight)
+
                 Box(
                     Modifier
                         .background(WeComposeTheme.colors.background)
@@ -50,11 +55,20 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun changeTheme() {
+    fun SystemAppearance(isLight: Boolean) {
         val view = LocalView.current
-        val light = WeComposeTheme.colors.light
-        val controller = WindowCompat.getInsetsController(window, view)
-        controller.isAppearanceLightStatusBars = light
+        // 如果不在 Activity 中，需要检查 window 是否存在
+        if (!view.isInEditMode) {
+            val window = (view.context as Activity).window
+            val insetsController = remember(window, view) {
+                WindowCompat.getInsetsController(window, view)
+            }
+
+            SideEffect {
+                insetsController.isAppearanceLightStatusBars = isLight
+                insetsController.isAppearanceLightNavigationBars = isLight
+            }
+        }
     }
 
     override fun onBackPressed() {
