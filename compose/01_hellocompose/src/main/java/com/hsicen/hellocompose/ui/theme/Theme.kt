@@ -3,6 +3,7 @@ package com.hsicen.hellocompose.ui.theme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.shapes
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 
 //这三个就是定义的基本常量
 private val LightColorPalette = WeComposeColors(
+    light = true,
     bottomBar = white1,
     background = white2,
     listItem = white,
@@ -36,6 +38,7 @@ private val LightColorPalette = WeComposeColors(
     chatPageBgAlpha = 0f,
 )
 private val DarkColorPalette = WeComposeColors(
+    light = false,
     bottomBar = black1,
     background = black2,
     listItem = black3,
@@ -55,7 +58,9 @@ private val DarkColorPalette = WeComposeColors(
     more = grey5,
     chatPageBgAlpha = 0f,
 )
+
 private val NewYearColorPalette = WeComposeColors(
+    light = false,
     bottomBar = red4,
     background = red5,
     listItem = red2,
@@ -93,6 +98,7 @@ object WeComposeTheme {
 //这样就是单纯的写法的问题了
 @Stable
 class WeComposeColors(
+    light: Boolean,
     bottomBar: Color,
     background: Color,
     listItem: Color,
@@ -112,6 +118,9 @@ class WeComposeColors(
     more: Color,
     chatPageBgAlpha: Float,
 ) {
+    var light: Boolean by mutableStateOf(light)
+        private set
+
     var bottomBar: Color by mutableStateOf(bottomBar)
         private set
     var background: Color by mutableStateOf(background)
@@ -153,7 +162,7 @@ class WeComposeColors(
 @Composable
 fun WeComposeTheme(
     theme: WeComposeTheme.Theme = WeComposeTheme.Theme.Light,
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     val targetColors = when (theme) {
         WeComposeTheme.Theme.Light -> LightColorPalette
@@ -182,6 +191,7 @@ fun WeComposeTheme(
     val chatPageBgAlpha = animateFloatAsState(targetColors.chatPageBgAlpha, TweenSpec(600))
 
     val colors = WeComposeColors(
+        light = targetColors.light,
         bottomBar = bottomBar.value,
         background = background.value,
         listItem = listItem.value,
