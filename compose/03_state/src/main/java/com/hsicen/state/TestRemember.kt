@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +25,7 @@ fun ComponentActivity.testRemember() {
     @Composable
     fun TestWithoutKey(param: Int) {
         val obj = remember { mutableIntStateOf(param) }
-        Log.i("testRemember","🔵 [WithoutKey] recomposed, param=$param, obj.value=${obj.intValue}")
+        Log.i("testRemember", "🔵 [WithoutKey] recomposed, param=$param, obj.value=${obj.intValue}")
 
         Text("Without key → obj.value = ${obj.intValue}")
     }
@@ -32,9 +33,30 @@ fun ComponentActivity.testRemember() {
     @Composable
     fun TestWithKey(param: Int) {
         val obj = remember(param) { mutableIntStateOf(param) }
-        Log.i("testRemember","🟢 [WithKey] recomposed, param=$param, obj.value=${obj.intValue}")
+        Log.i("testRemember", "🟢 [WithKey] recomposed, param=$param, obj.value=${obj.intValue}")
 
         Text("With key → obj.value = ${obj.intValue}")
+    }
+
+    /**
+     * 这个地方那个怎么都执行了，有点夸张了
+     */
+    @Composable
+    fun CommentBox(param: Int) {
+        val input = remember { mutableStateOf("") }  // 保持用户输入
+        TextField(value = input.value, onValueChange = { input.value = it })
+        //不加这个就不会导致重新执行了
+        Text("CommentBox param is $param")
+
+        Log.i("testRemember", "🟢 CommentBox recomposed, param=$param, input.value=${input.value}")
+    }
+
+    @Composable
+    fun CommentBox2(param: Int) {
+        val input = remember { mutableStateOf("") }  // 保持用户输入
+        TextField(value = input.value, onValueChange = { input.value = it })
+        //和 CommentBox 区分，没有使用参数
+        Log.i("testRemember", "🟢 CommentBox2 recomposed input.value=${input.value}")
     }
 
     @Composable
@@ -49,6 +71,10 @@ fun ComponentActivity.testRemember() {
                 Text("Change param")
             }
 
+            Spacer(Modifier.height(16.dp))
+            CommentBox2(param)
+            Spacer(Modifier.height(16.dp))
+            CommentBox(param)
             Spacer(Modifier.height(16.dp))
 
             Divider()
