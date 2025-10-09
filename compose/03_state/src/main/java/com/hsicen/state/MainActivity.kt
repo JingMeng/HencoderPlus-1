@@ -10,16 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
  * 描述：State
  */
 class MainActivity : AppCompatActivity() {
-  companion object {
-    const val TAG = "hsc"
-  }
+    companion object {
+        const val TAG = "hsc"
+    }
 
-  private val hsicen: String by NameDelegate()
+    private val hsicen: String by NameDelegate()
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
 //    compositionLocal1704()
-    stateScreen120()
-  }
+//    stateScreen120()
+        testRemember()
+    }
 }
