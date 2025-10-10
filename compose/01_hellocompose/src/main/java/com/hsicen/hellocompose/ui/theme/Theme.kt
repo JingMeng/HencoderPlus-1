@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 
 //这三个就是定义的基本常量
 private val LightColorPalette = WeComposeColors(
-    light = true,
+    isLight = true,
     bottomBar = white1,
     background = white2,
     listItem = white,
@@ -39,7 +39,7 @@ private val LightColorPalette = WeComposeColors(
     chatPageBgAlpha = 0f,
 )
 private val DarkColorPalette = WeComposeColors(
-    light = false,
+    isLight = false,
     bottomBar = black1,
     background = black2,
     listItem = black3,
@@ -61,7 +61,7 @@ private val DarkColorPalette = WeComposeColors(
 )
 
 private val NewYearColorPalette = WeComposeColors(
-    light = false,
+    isLight = false,
     bottomBar = red4,
     background = red5,
     listItem = red2,
@@ -99,7 +99,7 @@ object WeComposeTheme {
 //这样就是单纯的写法的问题了
 @Stable
 class WeComposeColors(
-    light: Boolean,
+    isLight: Boolean,
     bottomBar: Color,
     background: Color,
     listItem: Color,
@@ -119,7 +119,7 @@ class WeComposeColors(
     more: Color,
     chatPageBgAlpha: Float,
 ) {
-    var light: Boolean by mutableStateOf(light)
+    var isLight: Boolean by mutableStateOf(isLight)
         private set
 
     var bottomBar: Color by mutableStateOf(bottomBar)
@@ -194,7 +194,7 @@ fun WeComposeTheme(
     val chatPageBgAlpha = animateFloatAsState(targetColors.chatPageBgAlpha, TweenSpec(600))
 
     val colors = WeComposeColors(
-        light = targetColors.light,
+        isLight = targetColors.isLight,
         bottomBar = bottomBar.value,
         background = background.value,
         listItem = listItem.value,

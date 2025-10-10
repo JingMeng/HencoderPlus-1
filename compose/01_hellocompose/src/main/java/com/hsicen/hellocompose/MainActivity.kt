@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeComposeTheme(mViewModel.theme) {
                 // 从主题中获取当前是亮色还是暗色
-                val isLight = WeComposeTheme.colors.light
+                val isLight = WeComposeTheme.colors.isLight
                 // 应用系统 UI 外观
                 SystemAppearance(isLight = isLight)
 
