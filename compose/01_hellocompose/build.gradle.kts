@@ -11,4 +11,5 @@ android {
 dependencies {
   implementation(Deps.accompanistInsets)
   implementation(Deps.accompanistPager)
+    implementation("androidx.compose.material3:material3:1.4.0")
 }
